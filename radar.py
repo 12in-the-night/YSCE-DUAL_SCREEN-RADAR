@@ -33,7 +33,7 @@ grounds = [
     {"id": 202, "x": 0, "z": -4000, "name": "RUNWAY 09", "hp": 0, "isRunway": True}
 ]
 
-max_range = 10000  # Maximum radar display radius in world units
+max_range = 5000  # Maximum radar display radius in world units
 
 # ==========================================
 # 3. FONT SETUP
@@ -53,6 +53,26 @@ radius = int(min(center_x, center_y) * 0.85)
 
 running = True
 while running:
+    for event in pygame.event.get():
+        # If pilot click the red 'X' button to close window
+        if event.type == pygame.QUIT:
+            running = False
+            
+        # Catch window focus changes (when clicking away or clicking back)
+        elif event.type == pygame.ACTIVEEVENT:
+            # event.gain tells if window gained (1) or lost (0) focus
+            # Game keep running safe either way!
+            pass
+            
+        # Catch key presses (if pilot press Escape to quit)
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                running = False
+    # --- EVENT GUARD END ---
+
+    # Game drawing and radar math goes here after guard!
+    screen.fill((0, 0, 0)) # Clear screen black rock
+    pygame.display.flip()
     
     # Process input events from the OS and keyboard
     for event in pygame.event.get():
