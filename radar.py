@@ -54,7 +54,7 @@ while running:
             running = False
 
     # Paint entire screen pitch black (wipe old frame clean)
-    screen.fill((0, 110, 10))
+    screen.fill((0, 1, 1))
 
     # Calculate radar circle center and dimensions
     bar_height = 69

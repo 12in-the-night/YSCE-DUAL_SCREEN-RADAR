@@ -2,5 +2,7 @@
 .pixi/*
 !.pixi/config.toml
 
-"/YSFlight Community Edition Alpha Ver 20260314"
-"/YSFlight Community Edition Alpha Ver 20260314.zip"
+YSFlight Community Edition Alpha Ver 20260314/
+YSFlight Community Edition Alpha Ver 20260314.zip
+
+*.zip
