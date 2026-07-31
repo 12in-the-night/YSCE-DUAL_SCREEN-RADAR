@@ -1,0 +1,209 @@
+IDENTIFY "P1Y1_GINGA"
+CATEGORY UTILITY
+AFTBURNR TRUE                 			#HAVE AFTERBURNER?
+PROPELLR 23725HP              			#PROPELLER ENGINE (3650HP*6.5)
+WEIGHCLN 47223kg                			#WEIGHT CLEAN (7265kg*6.5)
+WEIGFUEL 14528kg                			#WEIGHT OF FUEL (2235kg*6.5)
+WEIGLOAD 6500kg                			#WEIGHT OF PAYLOAD (1000kg*6.5)
+FUELABRN 0.0kg				#FUEL CONSUMPTION WHEN USING AFTERBURNER
+FUELMILI 0.3341kg               			#FUEL CONSUMPTION AT MILITARY POWER (0.0514kg*6.5)
+PROPEFCY 0.75				#Propeller efficiency
+PROPVMIN 130kt				#Minimum speed that T=P/V becomes valid
+
+#gasoline : 0.75kg/L
+#Fuel consumption rate : 0.075kg/1000HP*min
+
+LEFTGEAR -2.5923m -2.2773m 1.1410m		#LEFT LANDING GEAR POSITION
+RIGHGEAR 2.5923m -2.2773m 1.1410m		#RIGHT LANDING GEAR POSITION
+WHELGEAR 0m -0.7566m -8.5091m		#WHEEL POSITION
+ARRESTER 0m -0.7566m -8.5091m		#Arresting hook position
+SMOKEGEN -2.5m 0.1533m 1.9567m		#SMOKE GENERATOR POSITION
+VAPORPO0 9.9466m 0.9240m 0.0433m		#VAPOR POSITION (Wings Swept Back or no-VGW)
+VAPORPO1 9.9466m 0.9240m 0.0433m		#VAPOR POSITION (Wings Spread)
+HTRADIUS 10.0m	                   		#OUTSIDE SPHERE RADIUS
+
+COCKPITP 0m 1.3208m 0.8442m    		#COCKPIT POSITION
+COCKPITA 0deg 0deg 0deg			#COCKPIT NEUTRAL VIEW DIRECTION
+SCRNCNTR 0.00 0.15			#CENTER OF SCREEN
+
+#extra viewpoints
+EXCAMERA "ct-site" 0m 1.2220m 1.3615m 0deg 0deg 0deg CABIN #p-r/tan(10)
+EXCAMERA "teisatsu" 0m 0.65m 3.30m 0deg -12deg 0deg INSIDE
+EXCAMERA "bsite" 0.06m -0.23m -5.2m 0deg -53.84deg 0deg CABIN
+
+INSTPANL User/oranleed/Ginga(v2)/P1Y1.ist		#ist file pass
+ISPNLPOS 0m 0m 1.529m	       		#INSIDE PANEL POTITION
+ISPNLATT 0deg 0deg 0deg     			#INSIDE PANEL ATTITUDE
+ISPNLSCL 1.0                 			#INSIDE PANEL SCALE
+
+STRENGTH 10				#STRENGTH
+
+CRITSPED 240kt            			#CRITICAL SPEED
+MAXSPEED 400kt             			#MAXIMUM SPEED
+
+CRITAOAP 14deg               			#CRITICAL AOA POSITIVE
+CRITAOAM -11deg               			#CRITICAL AOA NEGATIVE
+
+HASSPOIL TRUE                 			#HAS SPOILER?
+RETRGEAR TRUE                 			#HAS RETRACTABLE LANDING GEAR?
+VARGEOMW TRUE               			#HAS VARIABLE GEOMETRY WING?
+
+VGWSPED1 0kt				#VGW SPEED MINIMUM
+VGWSPED2 400kt				#VGW SPEED MAXIMUM
+
+CLVARGEO 0.0                 			#EFFECT OF VARIABLE GEOMETRY WING FOR Cl
+CDVARGEO 0.0                  			#EFFECT OF VARIABLE GEOMETRY WING FOR Cd
+CLBYFLAP 0.30                 			#EFFECT OF FLAP FOR Cl
+CDBYFLAP 0.30                  			#EFFECT OF FLAP FOR Cd
+CDBYGEAR 0.50                  			#EFFECT OF GEAR FOR Cd
+CDSPOILR 0.40                  			#EFFECT OF SPOILER FOR Cd
+
+WINGAREA 55.00m^2                		#WING AREA
+
+MXIPTAOA 13.0deg              			#MAX INPUT AOA
+MXIPTSSA 5.0deg               			#MAX INPUT SSA
+MXIPTROL 38.0deg             			#MAX INPUT ROLL
+
+MANESPD1 60kt                  			#MINIMUM MANEUVABLE SPEED
+MANESPD2 170kt                  			#FULLY MANEUVABLE SPEED
+CPITMANE 5.7                   			#PITCH MANEUVERBILITY CONSTANT
+CPITSTAB 4.0                  			#PITCH STABILITY CONSTANT
+CYAWMANE 3.8                   			#YAW MANEUVABILITY CONSTANT
+CYAWSTAB 3.5                   			#YAW STABILITY CONSTANT
+CROLLMAN 2.6                   			#ROLL MANEUVABILITY CONSTANT
+
+CTLLDGEA TRUE                 			#CONTROL LANDINGGEAR
+CTLBRAKE FALSE                			#CONTROL BRAKE
+CTLSPOIL 0.0                  			#CONTROL SPOILER
+CTLABRNR FALSE                			#CONTROL AFTERBURNER
+CTLTHROT 0.0                  			#CONTROL THRUST
+CTLIFLAP 0.0                  			#CONTROL FLAP
+CTLINVGW 0.0                  			#CONTROL VARIABLE GEOMETRY WING
+CTLATVGW FALSE               			#CONTROL AUTO VARIABLE GEOMETRY WING
+
+POSITION 0m 3ft 0m           			#POSITION
+ATTITUDE 45deg 0deg 0deg      		#ATTITUDE
+INITFUEL 75%                 			#INITIAL FUEL
+INITLOAD 0.0t                 			#INITIAL PAYLOAD
+INITSPED 0.0MACH              			#INITIAL SPEED
+
+#hard points
+HRDPOINT 0m -0.34m 0m B500*2 B250*4 AGM65 RKT*1 FUEL&11920kg
+
+#800kg bomb gives (11920/80)+1=150 damage.
+
+#weapon shape files
+WPNSHAPE B500 STATIC User/oranleed/Ginga(v2)/arm/[bomb]no25type99x2_s.srf
+WPNSHAPE B500 FLYING User/oranleed/Ginga(v2)/arm/[bomb]no25type99_f.srf
+WPNSHAPE B250 STATIC User/oranleed/Ginga(v2)/arm/[bomb]no6type99(g)x8_s.srf
+WPNSHAPE B250 FLYING User/oranleed/Ginga(v2)/arm/[bomb]no6type99(g)x2_f.srf
+WPNSHAPE AGM65 STATIC User/oranleed/Ginga(v2)/arm/[torpedo]type91.srf
+WPNSHAPE AGM65 FLYING User/oranleed/Ginga(v2)/arm/[torpedo]type91.srf
+WPNSHAPE RKT STATIC User/oranleed/Ginga(v2)/arm/[torpedo]type91.srf
+WPNSHAPE RKT FLYING User/oranleed/Ginga(v2)/arm/[torpedo]type91.srf
+WPNSHAPE FUEL STATIC User/oranleed/Ginga(v2)/arm/[bomb]no80model1.srf
+WPNSHAPE FUEL FLYING User/oranleed/Ginga(v2)/arm/[bomb]no80model1.srf
+
+LMTBYHDP TRUE				#Limit Max Num Weapon by Hardpoint
+BOMINBAY TRUE				#Bomb in Bay
+
+LOADWEPN B500 2				#Initial Weapon
+
+INITIGUN 0				#INITIAL GUN
+GUNSIGHT FALSE				#GUN SIGHT
+
+RADARCRS 1.0				#RADAR CROSS SECTION
+
+GEARHORN FALSE				#LANDING-GEAR WARNING HORN
+STALHORN FALSE				#STALL WARNING HORN
+
+#1kt=1.852km/h
+#1mach(0m,15c)=1224km/h=661kt
+#1ft=0.3048m
+
+REFVCRUS 295kt              			#CRUISING SPEED
+REFACRUS 19357ft              			#CRUISING ALTITUDE
+REFTCRUS 1.00               			#CRUISING THROTTLE SETTING
+
+REFVLAND 90kt                 			#LANDING SPEED
+REFAOALD 9deg                			#LANDING AOA
+REFLNRWY 900m                			#RUNWAY REQUIRED TO STOP
+REFTHRLD 0.50                 			#LANDING THROTTLE SETTING
+
+NMTURRET 8				#number of turret
+
+#---------------
+#Bomb sight control
+#---------------
+
+#komado
+TURRETPO 0 0m 0m 0m 0deg -90deg 90deg
+TURRETPT 0 0deg 0deg 0deg
+TURRETHD 0 -7.5deg 7.5deg 0deg
+TURRETAM 0 0
+TURRETNM 0 bs00
+TURRETCT 0 PILOT
+
+#oomado
+TURRETPO 1 0m 0m 0m 0deg 0deg 0deg
+TURRETPT 1 -90deg 0deg -90deg
+TURRETHD 1 0deg 0deg 0deg
+TURRETAM 1 0
+TURRETNM 1 bs01-1
+TURRETCT 1 PILOT
+
+TURRETPO 2 0m 0m 0m 0deg 0deg 0deg
+TURRETPT 2 -90deg 0deg -90deg
+TURRETHD 2 0deg 0deg 0deg
+TURRETAM 2 0
+TURRETNM 2 bs01-2
+TURRETCT 2 PILOT
+
+TURRETPO 3 0m 0m 0m 0deg 0deg 0deg
+TURRETPT 3 -90deg 0deg -90deg
+TURRETHD 3 0deg 0deg 0deg
+TURRETAM 3 0
+TURRETNM 3 bs01-3
+TURRETCT 3 PILOT
+
+TURRETPO 4 0m 0m 0m 0deg 0deg 0deg
+TURRETPT 4 -90deg 0deg -90deg
+TURRETHD 4 0deg 0deg 0deg
+TURRETAM 4 0
+TURRETNM 4 bs01-4
+TURRETCT 4 PILOT
+
+#---------------
+#GUN control
+#---------------
+
+#rear gun 13mm (type2,MG131) 900r/m
+TURRETPO 5 0m 1.1689m -1.1049m 180deg 0deg 0deg
+TURRETPT 5 0deg 30deg 0deg
+TURRETHD 5 -30deg 30deg 0deg
+TURRETAM 5 600
+TURRETIV 5 0.067sec
+TURRETAR 5
+TURRETCT 5 GUNNER
+TURRETRG 5 500m
+
+#front gun 20mm (type99-1-3) 520r/m
+TURRETPO 6 0m 0.0864m 4.3638m 0deg -7.5deg 0deg
+TURRETPT 6 -12.5deg 7.5deg 0deg
+TURRETHD 6 -20deg 20deg 0deg
+TURRETAM 6 200
+TURRETIV 6 0.115sec
+TURRETNM 6 cock09
+TURRETCT 6 PILOT
+TURRETRG 6 1000m
+
+TURRETPO 7 0m 0.0864m 4.3638m 0deg -7.5deg 0deg
+TURRETPT 7 -12.5deg 7.5deg 0deg
+TURRETHD 7 -20deg 20deg 0deg
+TURRETAM 7 200
+TURRETIV 7 0.115sec
+TURRETNM 7 cl08
+TURRETCT 7 PILOT
+TURRETRG 7 500m
+
+AUTOCALC

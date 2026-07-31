@@ -1,0 +1,24 @@
+--------------------------------------------------
+Åü"Type 95 Carrier-Based Fighter" Description
+--------------------------------------------------
+--------------------------------------------------
+ÅûViewpoint and Control
+--------------------------------------------------
+F1(Cockpit View) key: Change to the viewpoint to look into the sighting device
+
+Bomb bay door key: turn on wing lights & tail light
+Wheel brake key: make propeller visible
+Thrust vectoring key: make pilot invisible , and stop propeller when propeller is visible
+
+--------------------------------------------------
+ÅûOther
+--------------------------------------------------
+External fuel tanks and two 60kg bombs can be loaded.
+The look inside the cockpit is not correct, because I couldn't get enough data.
+
+--------------------------------------------------
+ÅûCaution for add-on makers
+--------------------------------------------------
+If you modify this add-on and publish it, you must specify the name of original add-on in your add-on's attached document.
+
+--------------------------------------------------

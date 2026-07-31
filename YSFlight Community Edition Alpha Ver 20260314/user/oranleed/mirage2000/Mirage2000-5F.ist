@@ -1,0 +1,12 @@
+REM Instrument Panel Definitoin for Mirage2000-5F
+REM Circular indicators,
+REM   ???????? x y radius
+REM Rectangular indicators
+REM   ???????? x1 y1 x2 y2
+REM   (x1<x2, y1<y2)
+
+PNLRANGE -0.30 -0.40 0.30 0.00
+
+ATTITUDE -0.155 -0.193 0.027
+HSI_____  0.155 -0.194 0.039
+FUEL____  0.085 -0.326 0.126 -0.270

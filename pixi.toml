@@ -1,0 +1,14 @@
+[workspace]
+name = "ysce-radar"
+version = "0.1.0"
+description = "YSCE Dual Screen Radar Mod"
+authors = ["Caveman"]
+channels = ["conda-forge"]
+platforms = ["win-64"]
+
+[dependencies]
+python = ">=3.10"
+pygame = "*"
+
+[tasks]
+run = "python radar.py"
