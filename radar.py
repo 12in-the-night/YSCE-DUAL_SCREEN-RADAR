@@ -54,10 +54,10 @@ while running:
             running = False
 
     # Paint entire screen pitch black (wipe old frame clean)
-    screen.fill((0, 10, 10))
+    screen.fill((0, 110, 10))
 
     # Calculate radar circle center and dimensions
-    bar_height = 90
+    bar_height = 69
     radar_h = h - bar_height
     center_x = w // 2
     center_y = radar_h // 2
@@ -80,7 +80,7 @@ while running:
 
         if g["isRunway"]:
             # Draw grey runway rectangle box
-            pygame.draw.rect(screen, (20, 136, 136), (sx - 14, sy - 4, 28, 8))
+            pygame.draw.rect(screen, (20, 200, 200), (sx - 14, sy - 4, 28, 8))
             # Chisel runway text stamp and place it above runway
             txt = small_font.render(f"ID:{g['id']} RUNWAY", True, (255, 255, 255))
             screen.blit(txt, (sx - 30, sy - 24))
@@ -100,7 +100,7 @@ while running:
         sy = int(center_y - (p["z"] / max_range) * radius)
 
         # Pick color: Red if enemy (team 1), Green if friend (team 0)
-        color = (255, 0, 0) if p["team"] == 1 else (0, 255, 0)
+        color = (255, 0, 0) if p["team"] == 1 else (0, 200, 55)
         
         # Draw dot blip for plane
         pygame.draw.circle(screen, color, (sx, sy), 8)
@@ -110,28 +110,28 @@ while running:
         # 2. Chisel into image stamp using small_font
         id_txt = small_font.render(f"ID:{p['id']}", True, color)
         # 3. Stamp image onto screen 12 pixels right and 10 pixels up from dot
-        screen.blit(id_txt, (sx + 12, sy - 10))
+        screen.blit(id_txt, (sx - 12, sy + 10))
 
         # If enemy lock on player, draw yellow target ring around dot
         if p["isLocked"]:
-            pygame.draw.circle(screen, (255, 255, 0), (sx, sy), 14, 2)
+            pygame.draw.circle(screen, (255, 255, 255), (sx, sy), 14, 2)
 
         # If missile incoming, stamp red "LOCK!" warning text above dot
         if p["missileWarning"]:
-            warn_txt = small_font.render("LOCK!", True, (255, 0, 0))
+            warn_txt = small_font.render("MISSILE!!-MISSILE!!", True, (255, 0, 0))
             screen.blit(warn_txt, (sx - 15, sy - 30))
 
     # ------------------------------------------
     # DRAW BOTTOM STATUS BAR
     # ------------------------------------------
     # Draw dark grey bar rectangle across bottom of screen
-    pygame.draw.rect(screen, (17, 17, 17), (0, radar_h, w, bar_height))
+    pygame.draw.rect(screen, (19,25 ,30 ), (0, radar_h, w, bar_height))
     # Draw bright green dividing line above bar
-    pygame.draw.line(screen, (0, 255, 0), (0, radar_h), (w, radar_h), 3)
+    pygame.draw.line(screen, (0, 255, 27), (0, radar_h), (w, radar_h), 3)
 
     # Format player stats text string
     gear_txt = "DOWN" if player["gear"] else "UP"
-    bar_text = f"WEAPON: {player['weaponId']} | LOCK ID: {player['targetLockId']} | GEAR: {gear_txt} | FLAPS: {player['flaps']}% | FUEL: {player['fuel']} LBS"
+    bar_text = f"WEAPON: {player['weaponId']} | LOCK ID: {player['targetLockId']} | GEAR: {gear_txt} | FLAPS: {player['flaps']}% | FUEL: {player['fuel']} mtrics"
     
     # Chisel status text into image stamp and paste onto bottom bar
     text_surface = font.render(bar_text, True, (0, 255, 0))
