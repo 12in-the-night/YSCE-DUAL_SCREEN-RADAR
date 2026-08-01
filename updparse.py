@@ -15,21 +15,17 @@
 # From the uploaded file: "Class doing the job of communicating with the server,
 # using the two serialization classes: YS_proto_snd and YS_proto_rcv"
 
-# The `struct` helpers let us encode and decode binary data using fixed-size field layouts.
-# The `socket`, `json`, `logging`, and `time` modules provide network transport,
-# summary output, diagnostic logging, and short timing delays for reconnect/backoff behavior.
+# `struct` encodes/decodes binary fields. `socket`, `json`, `logging`, and `time` handle networking, output, logging, and timing.
 from struct import pack, unpack
 import sys, socket, json, logging, time
 
-# The sender class builds outbound packets that the server expects to receive.
-# Every packet is framed with a 32-bit length header followed by the payload itself.
+# `YS_proto_snd` builds outbound server packets with a 32-bit length header followed by the payload.
 class YS_proto_snd:
     """Serialization class: each method return the serialized data
     (the packet) to send data to the YSFlight server"""
     def snd(self, buffer):
         """Add to a packet the 'size' information."""
-        # The protocol header is a little-endian unsigned 32-bit integer.
-        # Its value is the number of bytes in the payload, not counting the header itself.
+        # The protocol header is a little-endian unsigned 32-bit integer for the payload size.
         return pack("<I", len(buffer)) + buffer
 
     def reply(self, type, buffer):
@@ -37,7 +33,7 @@ class YS_proto_snd:
         Shortcut to reply to a packet that was received.
         The server usually expects a packet that echoes the same packet type back.
         """
-        # We re-wrap the original payload with a new type header and then prefix the frame length.
+        # The reply re-wraps the payload with the same packet type and adds the frame length header.
         return self.snd(pack("<I", type) + buffer)
 
     def ack(self, id, info):
@@ -45,9 +41,7 @@ class YS_proto_snd:
         Shortcut to send an acknowledgement packet.
         The original protocol uses a fixed packet shape: size, type, id, info.
         """
-        # `12` is the packet length in bytes for this fixed-size acknowledgement payload.
-        # `6` is the packet type value for acknowledgement messages.
-        # `id` and `info` are the two protocol fields the server uses to confirm a request.
+        # `12` is the fixed frame size, `6` is the acknowledgement type, and `id`/`info` confirm the request.
         return pack('<IIII', 12, 6, id, info)
 
     def login(self, username="test_user", version=20110207):
@@ -55,23 +49,19 @@ class YS_proto_snd:
         Returns a packet of type 1: login.
         We keep the existing character limit and packet layout expected by the server.
         """
-        # The server stores the player's nickname in a fixed-width 16-byte slot.
-        # We truncate the string so it cannot overflow the packet layout.
+        # The username is truncated to 16 bytes so it fits the fixed-width server field.
         username = username[0:15].encode('utf-8')
-        # The protocol version is sent as a numeric net-version field.
+        # `version` is coerced to an integer for the protocol's numeric net-version field.
         version = int(version)
-        # Packet structure: length header + type 1 + 16-byte username + 32-bit version.
+        # Packet layout: frame length, packet type 1, 16-byte username, and the version integer.
         return self.snd(pack("<I16sI", 1, username, version))
 
     def oneint(self, integer):
-        # Some server requests are just a single unsigned integer payload.
-        # Those requests are used to ask the server for a specific packet type.
+        # A one-int packet is a request payload for asking the server for a specific packet type.
         return self.snd(pack("<I", int(integer)))
 
 
-# The receiver class converts server payload bytes back into useful Python values.
-# The basic rule is: read the payload using a known little-endian field layout,
-# then return the resulting tuple so higher-level code can interpret it cleanly.
+# `YS_proto_rcv` turns server payload bytes back into Python values using fixed little-endian layouts.
 class YS_proto_rcv:
     """Deserialization class: each method returns the information
     extracted from the serialized data in 'buffer'."""
@@ -80,7 +70,7 @@ class YS_proto_rcv:
         Read packet of type 43.
         The packet contains a 32-bit integer prefix and then a printable ASCII option string.
         """
-        # The schema is `<I` + a trailing byte blob whose size is the remaining payload bytes.
+        # The format is a 32-bit integer prefix followed by the remaining byte string.
         decode = "<I{}s".format(len(buffer) - 4)
         return unpack(decode, buffer)
 
@@ -96,7 +86,7 @@ class YS_proto_rcv:
         Read packet of type 32.
         It contains a 32-bit signed integer marker followed by a chat-text byte string.
         """
-        # `l` means signed long integer; the rest of the payload is the message bytes.
+        # `l` reads a signed long integer, and the remaining bytes are the message content.
         decode = "<l{}s".format(len(buffer) - 4)
         return unpack(decode, buffer)
 
@@ -112,7 +102,7 @@ class YS_proto_rcv:
         Read packet of type 37.
         The payload contains two 16-bit values, two 32-bit values, and then a nickname string.
         """
-        # The field layout is: short action, short IFF, uint32 ID, uint32 unknown, then trailing bytes.
+        # Layout: two 16-bit fields, two 32-bit fields, then a trailing nickname byte string.
         decode = "<hhII{}s".format(len(buffer) - 12)
         return unpack(decode, buffer)
 
@@ -128,7 +118,7 @@ class YS_proto_rcv:
         Parse telemetry / aircraft state packet (commonly type 11).
         It returns the player ID and the six float coordinates/orientation values.
         """
-        # We only need: 1 unsigned integer ID + 6 32-bit float values = 28 bytes.
+        # The parser needs 1 unsigned int and 6 float fields, which is 28 bytes total.
         needed = 4 + 6 * 4
         if len(buffer) < needed:
             raise ValueError("buffer too short for aircraft_state")
@@ -136,70 +126,67 @@ class YS_proto_rcv:
         return unpack(fmt, buffer[:needed])
 
 
-# The server-side state object keeps the latest values seen from the game server.
-# This object acts as a cache that is updated as packet types arrive in the main loop.
+# `Server` stores the latest state seen from the game server as the packet loop updates it.
 class Server:
     """Class to store all the information we got from our communication
     with the YSFlight server."""
     def __init__(self, ip, port):
-        # The connection endpoint is remembered for traceability and debugging.
+        # The connection endpoint is remembered for debugging and diagnostics.
         self.ip         = ip
         self.port       = port
-        # The protocol version used by the server is tracked separately from the client version.
+        # `version` tracks the server's reported protocol version.
         self.version    = 20110207
-        # The overall connection state begins offline until the socket has established a session.
+        # `status` starts as offline until the socket successfully connects.
         self.status     = "offline"
-        # The current map name is updated when the server sends type 4 packets.
+        # `map` stores the latest map string returned by the server.
         self.map        = ""
-        # Boolean-like flags indicate whether the server reports missile, weapon, blackout, collision,
-        # or landing-event features as active.
+        # Boolean-like flags show whether missile, weapon, blackout, collision, or landing events are enabled.
         self.missileON  = 0
         self.weaponON   = 0
         self.blackoutON = 0
         self.collON     = 0
         self.landevON   = 0
-        # Weather is stored as a tuple: day, option bits, wind x/y/z, visibility.
+        # Weather is stored as day, option bits, wind x/y/z, and visibility.
         self.weather    = (0,0,0.0,0.0,0.0,0.0)
-        # The UI/user display preference value is parsed from packet type 41.
+        # `userOption` stores the UI display preference value from packet type 41.
         self.userOption = 0  # Show User Name within 'userOption' m
-        # When a radar altitude message is observed, it is converted to a float for telemetry.
+        # `radarAlti` stores the parsed radar altitude value.
         self.radarAlti  = ""
-        # Shared cockpit view option: whether the server reports a full F3 view.
+        # `f3view` tracks whether the server reports the F3 view option.
         self.f3view     = True
-        # Every parsed user-list tuple is appended to this list.
+        # `userList` stores the parsed user-list tuples.
         self.userList   = []
-        # Counters track distinct users and users who are currently in-flight.
+        # `users` and `flyingUsers` count the distinct and airborne users seen in the response.
         self.users      = 0
         self.flyingUsers= 0
-        # The last known position of each aircraft/player is stored here keyed by player ID.
+        # `positions` maps player IDs to the most recent position snapshot for that player.
         self.positions  = {}  # pid -> last known position dict
 
 
-# The `Apps` class is the runtime client: it owns the socket, packet encoder/decoder,
-# and the inbound packet dispatch loop that turns network messages into server state updates.
+# `Apps` owns the socket, packet encoder/decoder, and the dispatch loop that updates server state.
 class Apps:
     """Class doing the job of communicating with the server,
     using the two serialization classes: YS_proto_snd and YS_proto_rcv.
     """
     def __init__(self, ip, port, timeout):
-        # Save the server endpoint and the connection timeout for every socket operation.
+        # The endpoint and timeout are saved for every socket operation.
         self.ip       = ip
         self.port     = port
-        # A `Server` state object caches the latest game information received over the wire.
+        # `server` caches the latest game information received from the remote host.
         self.server   = Server(ip, port)
-        # These helpers turn bytes into Python values and Python values into network-safe bytes.
+        # `ysrcv` and `yssnd` convert payload bytes and craft outbound frames.
         self.ysrcv    = YS_proto_rcv()
         self.yssnd    = YS_proto_snd()
-        # Track how many packets have been processed, so the main loop can stop after a fixed limit.
+        # `packets` counts processed packets so the loop can stop after a fixed number.
         self.packets  = 0
-        # The client keeps a copy of the game network version it expects to speak.
+        # `version` stores the client-side protocol version expectation.
         self.version  = 0
         self.timeout  = timeout
-        # Store the username for login and later reconnect logic.
+        # `username` is used in login and reconnect logic.
         self.username = ''
-        # The socket is connected only after a successful call to `connect()`.
+        # `connected` is only true after a successful TCP connection is made.
         self.connected = False
-        # The network socket is initialized lazily in `connect()`.
+        # `s` holds the live network socket instance.
         self.s = None
 
     def connect(self, username, version):
