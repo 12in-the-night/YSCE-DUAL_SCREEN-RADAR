@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#
-# Author:      Vincent A forked darsh gupta
+#also this code dose not work at all because idk the tcp / udp that the server is send ing todo find the protocal that the server is useing
+# Author:      Vincent A forked by lol you want my name 
 # Description: Library to talk to an YSFlight server
 # Usage:       Modify the classes Server and Apps to your needs 
 #
