@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Author:      Vincent A
+# Author:      Vincent A forked darsh gupta
 # Description: Library to talk to an YSFlight server
-# Usage:       Modify the classes Server and Apps to your needs
+# Usage:       Modify the classes Server and Apps to your needs 
 #
 # The following is a patched, ready-to-run version of the script you provided.
 # It preserves the original behavior (map, weather, user list, air display options)
