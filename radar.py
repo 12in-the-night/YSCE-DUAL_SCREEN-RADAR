@@ -1,6 +1,5 @@
 import sys
 import pygame
-
 # ==========================================
 # 1. INITIALIZE PYGAME AND THE DISPLAY
 # ==========================================
@@ -10,6 +9,7 @@ w, h = info.current_w, info.current_h  # Store the full-screen window dimensions
 
 # Create a borderless full-screen window on the primary display
 screen = pygame.display.set_mode((w, h), pygame.FULLSCREEN)
+# Set the window title shown in the OS window manager
 pygame.display.set_caption("why did i chose this project blink 2 for help while debuging it")
 clock = pygame.time.Clock()            # Create a frame-timer for throttling the loop
 
@@ -20,13 +20,15 @@ clock = pygame.time.Clock()            # Create a frame-timer for throttling the
 player = {"gear": False, "flaps": 0, "fuel": 1000, "weaponId": 1, "targetLockId": 101}
 
 # Aircraft list: id, world position, team side, lock state, and missile warning state
+# team=1 is treated as hostile; team=0 is treated as friendly
 planes = [
     {"id": 101, "x": 2000, "z": 3000, "team": 1, "isLocked": True, "missileWarning": True},# Enemy ID 101
-    {"id": 101, "x": 200, "z": 300, "team": 1, "isLocked": True, "missileWarning": True},
-    {"id": 102, "x": -1500, "z": -2000, "team": 0, "isLocked": False, "missileWarning": False} # Friend ID 102
+    {"id": 102, "x": 200, "z": 300, "team": 1, "isLocked": True, "missileWarning": True},
+    {"id": 103, "x": -1500, "z": -2000, "team": 0, "isLocked": False, "missileWarning": False} # Friend ID 102
 ]
 
 # Ground objects: SAM sites and runways
+# isRunway=True means draw a runway marker instead of a SAM-site icon
 grounds = [
     {"id": 201, "x": -3000, "z": 4000, "name": "SAM SITE", "hp": 100, "isRunway": False},
     {"id": 203, "x": -3000, "z": 4000, "name": "SAM SITE", "hp": 100, "isRunway": False},
@@ -51,51 +53,45 @@ center_x = w // 2
 center_y = radar_h // 2
 radius = int(min(center_x, center_y) * 0.85)
 
+# Expand the radar range just enough to cover the farthest tracked object
+# and provide a small safety margin around the visible edge.
+for p in planes:
+    # Calculate the straight-line distance from the origin to each aircraft.
+    dist = (p["x"] ** 2 + p["z"] ** 2) ** 0.5
+    if dist > max_range:
+        max_range = dist
+
+# Add a small safety buffer to the display scale so targets do not sit exactly on the edge.
+max_range += 300
+
 running = True
 while running:
+    # Read all pending events and react to quit or escape input.
     for event in pygame.event.get():
-        # If pilot click the red 'X' button to close window
         if event.type == pygame.QUIT:
             running = False
-            
-        # Catch window focus changes (when clicking away or clicking back)
-        elif event.type == pygame.ACTIVEEVENT:
-            # event.gain tells if window gained (1) or lost (0) focus
-            # Game keep running safe either way!
-            pass
-            
-        # Catch key presses (if pilot press Escape to quit)
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                running = False
-    # --- EVENT GUARD END ---
-
-    # Game drawing and radar math goes here after guard!
-    screen.fill((0, 0, 0)) # Clear screen black rock
-    pygame.display.flip()
-    
-    # Process input events from the OS and keyboard
-    for event in pygame.event.get():
-        # Close the loop on window close or ESC key press
-        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             running = False
 
-    # Clear the screen for the next frame
+    # Clear the drawing surface at the start of each frame.
     screen.fill((0, 1, 1))
 
 
     # ------------------------------------------
     # DRAW RADAR SCOPE RINGS AND PLAYER CENTER
     # ------------------------------------------
+    # Draw the outer detection boundary and the inner guide ring.
     pygame.draw.circle(screen, (0, 255, 0), (center_x, center_y), radius, 3)     # Outer radar ring
     pygame.draw.circle(screen, (0, 68, 0), (center_x, center_y), int(radius * 0.5), 2) # Inner radar ring
+    # Draw a small bright marker at the radar center to represent the player aircraft.
     pygame.draw.circle(screen, (255, 255, 0), (center_x, center_y), 6)           # Player marker at the center
 
     # ------------------------------------------
     # DRAW GROUND TARGETS AND RUNWAYS
     # ------------------------------------------
     for g in grounds:
-        # Convert world-space coordinates (x, z) into screen-space coordinates (sx, sy)
+        # Project world coordinates into a radar-relative screen position
+        # using a simple scale based on max_range and the drawn radar radius.
         sx = int(center_x + (g["x"] / max_range) * radius)
         sy = int(center_y - (g["z"] / max_range) * radius)
 
@@ -117,6 +113,7 @@ while running:
     # ------------------------------------------
     for p in planes:
         # Convert aircraft world coordinates into screen-space coordinates
+        # so the radar blip stays centered on the scope and scales with the range.
         sx = int(center_x + (p["x"] / max_range) * radius)
         sy = int(center_y - (p["z"] / max_range) * radius)
 
@@ -142,16 +139,16 @@ while running:
     # ------------------------------------------
     # DRAW THE STATUS BAR
     # ------------------------------------------
-    # Draw the dark panel across the bottom of the screen
+    # Draw the dark panel across the bottom of the screen for the HUD readout
     pygame.draw.rect(screen, (19,25 ,30 ), (0, radar_h, w, bar_height))
-    # Draw a bright green separator line above the status bar
+    # Draw a bright green separator line above the status bar to visually split HUD sections
     pygame.draw.line(screen, (0, 255, 27), (0, radar_h), (w, radar_h), 3)
 
-    # Build the player status text line
+    # Build the player status text line shown in the HUD bar.
     gear_txt = "DOWN" if player["gear"] else "UP"
-    bar_text = f"WEAPON: {player['weaponId']} | LOCK ID: {player['targetLockId']} | GEAR: {gear_txt} | FLAPS: {player['flaps']}% | FUEL: {player['fuel']} mtrics"
+    bar_text = f"WEAPON: {player['weaponId']} | LOCK ID: {player['targetLockId']} | GEAR: {gear_txt} | FLAPS: {player['flaps']}% | FUEL: {player['fuel']} meters"
     
-    # Render and place the status text in the bottom panel
+    # Render and place the status text in the bottom panel.
     text_surface = font.render(bar_text, True, (0, 255, 0))
     screen.blit(text_surface, (20, radar_h + 30))
 
