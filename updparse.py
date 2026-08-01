@@ -330,6 +330,9 @@ class Apps:
             self.send(self.yssnd.oneint(33))
             self.send(self.yssnd.oneint(37))
         elif type == 11:
+            print("DEBUG: aircraft payload len =", len(buffer))
+            print("DEBUG: aircraft payload hex =", buffer.hex())
+
             # Packet type 11 is aircraft telemetry: a player state snapshot with world position and orientation.
             try:
                 pid, x, y, z, heading, pitch, bank = self.ysrcv.aircraft_state(buffer)
