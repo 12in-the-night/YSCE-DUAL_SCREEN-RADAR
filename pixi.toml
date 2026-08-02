@@ -9,6 +9,8 @@ platforms = ["win-64"]
 [dependencies]
 python = ">=3.10"
 pygame = "*"
+geojson = ">=3.3.0,<4"
+pyqt = "5.15.11.*"
+pyqtwebengine = "5.15.11.*"
 
 [tasks]
-run = "python radar.py"
