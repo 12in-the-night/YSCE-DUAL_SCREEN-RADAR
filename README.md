@@ -1,3 +1,4 @@
+wip 
 # YSCE-DUAL_SCREEN-RADAR
 this a side projectt dont expext me to fix it 
 also i shity at  codeing  
